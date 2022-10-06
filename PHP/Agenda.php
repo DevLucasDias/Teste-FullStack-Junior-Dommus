@@ -27,6 +27,39 @@
       // TODO implementar o método que filtrará os eventos do estado da Agenda,
       // retornando apenas os da data informada por parâmetro - sem alterar o estado
       // do objeto Agenda
+      $eventos = $this->eventos;
+      $i = 0;
+      foreach ($eventos as $evento) {
+        $dataHoraEvento = $evento->getDataHora();
+        if (strtotime($dataHoraEvento->format('Y-m-d')) == strtotime($dataHoraDia)) {
+          $filtered[$i] = $evento;
+          $i++;
+        }
+      }
+  
+      usort($filtered, function ($a, $b) {
+        $a = strtotime($a->getDataHora()->format('H:i:s'));
+        $b = strtotime($b->getDataHora()->format('H:i:s'));
+        if ($a == $b) {
+          return 0;
+        }
+        return (($a) < $b) ? -1 : 1;
+      });
+  
+      return ($filtered);
+    }
+  
+    public function imprimirJsonEventosDiaOrdenados($dataHoraDia)
+    {
+      $resultado = array();
+      $filtrado = $this->filtrarEventosDia($dataHoraDia);
+      foreach ($filtrado as $filtered) {
+        $resultado[] = $filtered->getEstadoEmArrayAssociativo();
+      }
+  
+      $result = json_encode($resultado);
+  
+      return $result;
     }
   }
 ?>
